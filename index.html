@@ -25,16 +25,11 @@
 <script>
 console.log("JavaScript is working");
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-console.log("JavaScript is working");
-
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
-  "ضع هنا Project URL",
-  "ضع هنا anon public key"
+  "https://example.supabase.co",  // مؤقتًا
+  "public-anon-key"               // مؤقتًا
 );
 
 async function signUp() {
