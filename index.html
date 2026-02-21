@@ -11,7 +11,7 @@
 
 <div id="authSection">
   <h3>تسجيل دخول / إنشاء حساب</h3>
-  <input type="email" id="email" placeholder="البريد الإلكتروني">
+  <input type="email" id="email" placeholder="ادخل البريد الإلكتروني">
   <input type="password" id="password" placeholder="كلمة السر">
   <button onclick="signup()">إنشاء حساب</button>
   <button onclick="login()">تسجيل دخول</button>
@@ -20,6 +20,40 @@
 <div id="lessonsList" style="display:none;">
   <h3>الدروس المتاحة</h3>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const supabaseUrl = "ضع هنا Project URL";
+const supabaseKey = "ضع هنا anon public key";
+
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+async function signUp() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  const user = data.user;
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert([{ id: user.id, email: user.email }]);
+
+  if (profileError) {
+    alert(profileError.message);
+  } else {
+    alert("تم إنشاء الحساب بنجاح ✅");
+  }
+}
+</script>
 </body>
 </html>
