@@ -1,33 +1,102 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_ANON_KEY';
+// إعداد Supabase
+const supabaseUrl = 'https://narakieunwgzeozzxkxu.supabase.co';
+const supabaseKey = 'sb_publishable_0iF0iT70IA9OGIUPfuaXdw_dnQYBXaF';
 const supabase = createClient(supabaseUrl, supabaseKey);
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data: { session } } = await supabase.auth.getSession();
 
+  updateUI(session);
+});
+supabase.auth.onAuthStateChange((_event, session) => {
+  updateUI(session);
+});
+
+function updateUI(session) {
+  const authSection = document.getElementById("authSection");
+  const lessonsList = document.getElementById("lessonsList");
+
+  if (session) {
+    authSection.style.display = "none";
+    lessonsList.style.display = "block";
+    addLogoutButton();
+  } else {
+    authSection.style.display = "block";
+    lessonsList.style.display = "none";
+  }
+}
+function addLogoutButton() {
+  if (!document.getElementById("logoutBtn")) {
+    const btn = document.createElement("button");
+    btn.id = "logoutBtn";
+    btn.textContent = "تسجيل خروج";
+    btn.onclick = async () => {
+      await supabase.auth.signOut();
+    };
+    document.getElementById("lessonsList").appendChild(btn);
+  }
+}
+document.addEventListener("DOMContentLoaded", async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  const authSection = document.getElementById("authSection");
+  const lessonsList = document.getElementById("lessonsList");
+
+  if (session) {
+    authSection.style.display = "none";
+    lessonsList.style.display = "block";
+  } else {
+    authSection.style.display = "block";
+    lessonsList.style.display = "none";
+  }
+});
+// زر إنشاء الحساب
+const signupBtn = document.getElementById('signupBtn');
+
+// دالة إنشاء حساب
 async function signup() {
+  signupBtn.disabled = true;
+
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
-  const { user, error } = await supabase.auth.signUp({ email, password });
-  if(error) alert(error.message);
-  else alert('تم إنشاء الحساب!');
+
+  const { data, error } = await supabase.auth.signUp(
+    { email, password },
+    { emailRedirectTo: 'https://fopontop73-cloud.github.io/fopontop73-cloud-lessons-or-videos/' }
+  );
+
+  if (error) {
+    alert(error.message);
+    signupBtn.disabled = false;
+    return;
+  }
+
+  alert('تم إنشاء الحساب! ✅\nتحقق من بريدك لتأكيد الحساب.');
+  signupBtn.disabled = false;
 }
 
+// دالة تسجيل الدخول
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if(error) alert(error.message);
-  else {
-    alert('تم تسجيل الدخول!');
-    document.getElementById('authSection').style.display = 'none';
-    document.getElementById('lessonsList').style.display = 'block';
-    loadLessons();
+  if (error) {
+    alert(error.message);
+    return;
   }
+
+  alert('تم تسجيل الدخول!');
+  document.getElementById('authSection').style.display = 'none';
+  document.getElementById('lessonsList').style.display = 'block';
+  loadLessons();
 }
 
-async function loadLessons(){
+// تحميل الدروس
+async function loadLessons() {
   const { data, error } = await supabase.from('lessons').select('*');
-  if(error) { console.log(error); return; }
+  if (error) { console.log(error); return; }
 
   let html = '';
   data.forEach(lesson => {
@@ -40,17 +109,18 @@ async function loadLessons(){
   document.getElementById('lessonsList').innerHTML = html;
 }
 
-async function viewLesson(videoPath){
+// عرض الدرس بالفيديو
+async function viewLesson(videoPath) {
   const { data, error } = await supabase
     .storage
     .from('lessons-videos')
-    .createSignedUrl(videoPath, 3600); // رابط مؤقت 1 ساعة
+    .createSignedUrl(videoPath, 3600);
 
-  if(error) { alert('خطأ في الوصول للفيديو'); return; }
-
-  window.open(data.signedUrl, '_blank'); // يشغل الفيديو في نافذة جديدة
+  if (error) { alert('خطأ في الوصول للفيديو'); return; }
+  window.open(data.signedUrl, '_blank');
 }
 
+// ربط الدوال بالواجهة
 window.signup = signup;
 window.login = login;
 window.viewLesson = viewLesson;

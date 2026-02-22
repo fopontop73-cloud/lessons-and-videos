@@ -2,62 +2,23 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>منصة الدروس</title>
+<title> الخبير حسن حجازى منصة دروس</title>
 <link rel="stylesheet" href="style.css">
 <script type="module" src="main.js"></script>
 </head>
 <body>
-<h1>منصة الدروس</h1>
+<h1>الخبير حسن حجازى منصة دروس</h1>
 
 <div id="authSection">
   <h3>تسجيل دخول / إنشاء حساب</h3>
   <input type="email" id="email" placeholder="ادخل البريد الإلكتروني">
   <input type="password" id="password" placeholder="كلمة السر">
-  <button onclick="signup()">إنشاء حساب</button>
+  <button id="signupBtn" onclick="signup()">إنشاء حساب</button>
   <button onclick="login()">تسجيل دخول</button>
 </div>
 
 <div id="lessonsList" style="display:none;">
   <h3>الدروس المتاحة</h3>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-console.log("JavaScript is working");
-
-const { createClient } = supabase;
-
-const supabaseClient = createClient(
-  "https://narakieunwgzeozzxkxu.supabase.co",
-  "sb_publishable_0iF0iT70IA9OGIUPfuaXdw_dnQYBXaF"
-);
-
-async function signUp() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const { data, error } = await supabaseClient.auth.signUp({
-    email,
-    password
-  });
-
-  if (error) {
-    alert(error.message);
-    return;
-  }
-
-  const user = data.user;
-
-  const { error: profileError } = await supabaseClient
-    .from("profiles")
-    .insert([{ id: user.id, email: user.email }]);
-
-  if (profileError) {
-    alert(profileError.message);
-  } else {
-    alert("تم إنشاء الحساب بنجاح ✅");
-  }
-}
-</script>
 </body>
 </html>
