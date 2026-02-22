@@ -20,7 +20,22 @@ function updateUI(session) {
   if (session) {
     authSection.style.display = "none";
     lessonsList.style.display = "block";
+    loadLessons();    
     addLogoutButton();
+   function loadLessons() {
+  const lessonsList = document.getElementById("lessonsList");
+
+  lessonsList.innerHTML = `
+    <h3>الدروس المتاحة</h3>
+    <ul>
+      <li>الدرس الأول</li>
+      <li>الدرس الثاني</li>
+      <li>الدرس الثالث</li>
+    </ul>
+  `;
+
+  addLogoutButton();
+}
   } else {
     authSection.style.display = "block";
     lessonsList.style.display = "none";
